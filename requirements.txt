@@ -1,0 +1,5 @@
+python-dotenv
+requests
+faster-whisper
+gradio_client
+piper-tts
