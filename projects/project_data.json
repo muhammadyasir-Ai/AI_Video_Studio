@@ -1,0 +1,30 @@
+{
+    "title": "AI in 2026: What It Can Really Do",
+    "description": "Explore the real capabilities of AI in 2026, from creative collaboration to everyday life. A quick, engaging look at the tech shaping our future.",
+    "scenes": [
+        {
+            "scene_number": 1,
+            "narration": "Welcome to 2026, AI everywhere. Today we uncover its true power.",
+            "image_prompt": "A bustling neon‑lit city skyline at dusk, skyscrapers with holographic billboards, drones flying overhead, pedestrians in smart wearables, reflections on glass, cinematic lighting, high detail.",
+            "motion_prompt": "Slow dolly from street level up to cityscape, slight upward tilt, ambient city sounds, subtle motion blur."
+        },
+        {
+            "scene_number": 2,
+            "narration": "AI composes music that feels real. Symphonies are written in milliseconds.",
+            "image_prompt": "A sleek studio with floating hologram of a composer, levitating instruments, AI interface glowing, musician wearing futuristic headphones, ambient synth lighting, ultra‑realistic textures.",
+            "motion_prompt": "Smooth pan across the studio, focus shift from hologram to musician, subtle light flicker, camera follows instrument movement."
+        },
+        {
+            "scene_number": 3,
+            "narration": "It predicts health issues early. Your data is its playbook.",
+            "image_prompt": "A futuristic home interior with transparent health monitor walls, virtual assistant projecting health stats, family interacting, soft ambient glow, polished surfaces, hyper‑realistic details.",
+            "motion_prompt": "Track from wall to assistant, gentle zoom in, soft pulse animation, camera pans to family members, subtle camera shake."
+        },
+        {
+            "scene_number": 4,
+            "narration": "AI handles errands with care. From groceries to repairs, it's unseen.",
+            "image_prompt": "Domestic setting: kitchen counter with AI kitchen assistant, robot arm cooking, smartphone displaying orders, pet dog watching, warm kitchen light, realistic textures, cinematic composition.",
+            "motion_prompt": "Camera follows robot arm, then pans to smartphone, final wide shot of household, smooth dolly, slight tilt, subtle ambient sounds."
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "sample_rate": 22050,
+    "silence_seconds": 0.4,
+    "total_duration": 36.871,
+    "scenes": [
+        {
+            "scene_number": 1,
+            "audio_file": "voiceovers/scene_1.wav",
+            "speech_duration": 8.661,
+            "silence_duration": 0.4,
+            "duration": 9.061,
+            "start": 0.0,
+            "end": 9.061
+        },
+        {
+            "scene_number": 2,
+            "audio_file": "voiceovers/scene_2.wav",
+            "speech_duration": 8.011,
+            "silence_duration": 0.4,
+            "duration": 8.411,
+            "start": 9.061,
+            "end": 17.472
+        },
+        {
+            "scene_number": 3,
+            "audio_file": "voiceovers/scene_3.wav",
+            "speech_duration": 9.683,
+            "silence_duration": 0.4,
+            "duration": 10.083,
+            "start": 17.472,
+            "end": 27.555
+        },
+        {
+            "scene_number": 4,
+            "audio_file": "voiceovers/scene_4.wav",
+            "speech_duration": 8.916,
+            "silence_duration": 0.4,
+            "duration": 9.316,
+            "start": 27.555,
+            "end": 36.871
+        }
+    ]
+}

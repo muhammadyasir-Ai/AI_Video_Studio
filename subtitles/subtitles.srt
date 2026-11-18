@@ -1,0 +1,32 @@
+1
+00:00:00,000 --> 00:00:03,800
+Welcome to the future of AI, where machines shape our world.
+
+2
+00:00:03,800 --> 00:00:08,599
+In this video, we explore how artificial intelligence will transform everyday life.
+
+3
+00:00:09,060 --> 00:00:14,260
+Imagine doctors guided by AI that diagnoses in milliseconds, patients receive personalized
+
+4
+00:00:14,260 --> 00:00:16,900
+treatments thanks to real-time data analysis.
+
+5
+00:00:17,472 --> 00:00:22,472
+Self-driving cars glide through smart streets, reducing accidents and congestion.
+
+6
+00:00:22,472 --> 00:00:27,472
+Canuters enjoy seamless, eco-friendly journeys powered by AI algorithms.
+
+7
+00:00:27,554 --> 00:00:33,155
+With great power commons responsibility, we must design AI that respects privacy and fairness.
+
+8
+00:00:33,155 --> 00:00:36,554
+Join us as we shape a brighter, smarter tomorrow together.
+
