@@ -3,3 +3,4 @@ requests
 faster-whisper
 gradio_client
 piper-tts
+streamlit>=1.40.0
