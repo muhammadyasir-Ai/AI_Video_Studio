@@ -1,81 +1,125 @@
-# AI Video Studio
+# 🎬 AI Video Studio
 
-An AI-powered video studio built with Python. It generates a script, creates images and voiceovers, produces subtitles, generates video clips, and assembles them into a final video.
+An AI-powered video studio built with Python. Type a topic, and the studio writes a script, creates scene images, records a voiceover, adds subtitles, generates animated clips and assembles one final video. A **Streamlit** dashboard lets you run and monitor every step from the browser.
 
-## Pipeline
+## ✨ Features
 
-1. `generate_script.py`: writes the video script with an AI text model.
-2. `generate_image.py`: creates scene images.
-3. `generate_voice.py`: creates voiceover audio with Piper TTS.
-4. `generate_subtitles.py`: transcribes audio into subtitles with Whisper.
-5. `generate_video.py`: generates video clips through a Gradio model.
-6. `assemble_video.py`: joins clips, audio and subtitles with FFmpeg.
+- **Full pipeline:** topic → script → images → voiceover → subtitles → clips → final video
+- **Streamlit dashboard:** 7 pages with a dark theme (Dashboard, Create New Video, Pipeline, My Videos, History, Settings, About)
+- **Background jobs:** video generation runs in the background. A page refresh never starts a second job, and you can stop a running job at any time
+- **Live progress:** stage status (Pending, Running, Completed, Failed) and a live log
+- **Video library:** every finished video is saved with its script, subtitles and thumbnail
+- **Generation history:** every run with its time, duration and any error
+- **Script review:** edit the title and narration before building the video
+- **Command-line scripts:** each step can also be run on its own from the terminal
 
-## Setup
+## 🧰 Tech stack
 
-1. Install Python 3.10 or newer, and FFmpeg (it must be available on PATH).
-2. Create a virtual environment and install the packages:
+| Part | Technology |
+|---|---|
+| Dashboard | Streamlit |
+| Script and images | Cloudflare Workers AI (`gpt-oss-20b` for text, `flux-1-schnell` for images) |
+| Voiceover | Piper TTS (offline, local model) |
+| Subtitles | faster-whisper (Whisper, runs on CPU) |
+| Video clips | Wan 2.2 through a Gradio model on Hugging Face |
+| Final assembly | FFmpeg |
+
+## 🔄 How the pipeline works
+
+1. **Script:** AI writes the title, scenes, narration and visual prompts.
+2. **Images:** one image is created for each scene.
+3. **Voiceover:** narration is recorded offline with Piper, with timing for each scene.
+4. **Subtitles:** Whisper transcribes the narration into an SRT file.
+5. **Video clips:** each image is animated into a short clip with Wan 2.2.
+6. **Final video:** FFmpeg joins the clips, narration and subtitles into one MP4.
+
+## 📁 Project structure
+
+```
+app.py                  Streamlit entry point (navigation and theme)
+core/                   Paths, job control, background runner, history, archive, library
+ui/                     One module per dashboard page
+assets/                 Dark theme CSS and logo
+.streamlit/config.toml  Dark theme settings
+generate_script.py      Step 1: script
+generate_image.py       Step 2: scene images
+generate_voice.py       Step 3: voiceover
+generate_subtitles.py   Step 4: subtitles
+generate_video.py       Step 5: video clips
+assemble_video.py       Step 6: final video
+requirements.txt        Python packages
+```
+
+## ⚙️ Setup
+
+**Requirements:** Python 3.10 or newer, and FFmpeg (it must be available on your PATH).
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/muhammadyasir-Ai/AI_Video_Studio.git
+   cd AI_Video_Studio
    ```
+
+2. Create and activate a virtual environment:
+   ```bash
    python -m venv venv
-   venv\Scripts\activate
+   venv\Scripts\activate        # Windows
+   source venv/bin/activate     # macOS / Linux
+   ```
+
+3. Install the packages:
+   ```bash
    pip install -r requirements.txt
    ```
-3. Download the Piper voice model `en_US-lessac-medium.onnx` and its `.json` file from the Piper voices repository, and place both in the project folder. They are not stored in this repository because of their size.
-4. Create a `.env` file in the project folder with your keys:
+
+4. Download the Piper voice model `en_US-lessac-medium.onnx` and its `.json` file from the Piper voices project, and place both in the project folder. They are not stored in this repository because of their size.
+
+5. Create a `.env` file in the project folder with your Cloudflare keys:
    ```
    CLOUDFLARE_ACCOUNT_ID=your_account_id
    CLOUDFLARE_API_TOKEN=your_api_token
    ```
-   Never commit `.env` to GitHub.
+   Never commit `.env` to GitHub. It is already listed in `.gitignore`.
 
-## Run
+## ▶️ How to run
 
-Run the scripts in pipeline order, starting with `generate_script.py`.
-
-## Streamlit GUI (AI Video Studio)
-
-The GUI runs the same pipeline scripts as the command line. The original scripts
-(`generate_script.py`, `generate_image.py`, `generate_voice.py`, `generate_subtitles.py`,
-`generate_video.py`, `assemble_video.py`) are not changed.
-
-### Run the GUI
-
-```
-venv\Scripts\activate
-pip install -r requirements.txt
+**Streamlit dashboard (recommended):**
+```bash
 streamlit run app.py
 ```
+Open http://localhost:8501 in your browser. Enter a topic on the **Create New Video** page and click **Generate video**.
 
-Open http://localhost:8501 in your browser.
-
-### Pages
-
-- **Dashboard:** totals, recent generations, 7-day activity, pipeline health and storage.
-- **Create New Video:** enter a topic and generate a video, continue an existing script, or review and edit the script.
-- **Video Generation Pipeline:** live stage status, log, stop button and run-one-stage buttons.
-- **My Videos:** finished videos with search, sort, preview and download, plus script and subtitles.
-- **Generation History:** every run started from the GUI, with errors and output files.
-- **Settings:** credential presence check (values are never shown), read-only model list and maintenance actions.
-- **About:** what the studio does and how the pipeline works.
-
-### How it works
-
-- Jobs run in a background process (`core/runner.py`). A page refresh does not start a second job, and only one job runs at a time.
-- Progress is stored in `projects/job_status.json`. Output goes to `projects/job_log.txt`.
-- History is stored in `projects/history.json`. It only contains runs started from the GUI.
-- Each finished video is copied to `final/archive/` with its script, subtitles and thumbnail, so a new run does not overwrite it.
-
-### Project structure
-
+**Command line (step by step):**
+```bash
+python generate_script.py
+python generate_image.py
+python generate_voice.py
+python generate_subtitles.py
+python generate_video.py
+python assemble_video.py
 ```
-app.py              entry point, navigation and theme
-core/               config, file checks, background job control, runner, history, archive, library
-ui/                 one module per page, plus shared helpers
-assets/             style.css (dark theme) and logo.svg
-.streamlit/config.toml   dark theme settings
-```
+Run them in this order. Each step reads the output of the previous one.
 
-### Notes
+## 🗂️ Outputs
 
-- `.env` holds your API keys. Keep it out of Git (it is already in `.gitignore`).
-- Test the full run on your own PC. The Cloudflare, Piper, Whisper, Wan 2.2 and FFmpeg steps need your local setup.
+| Folder or file | Contents |
+|---|---|
+| `projects/project_data.json` | Script with title, scenes and prompts |
+| `output/` | Scene images |
+| `voiceovers/` | Scene audio and combined narration |
+| `subtitles/subtitles.srt` | Subtitles |
+| `video/` | Scene clips |
+| `final/final_video.mp4` | Latest final video |
+| `final/archive/` | Every finished video, with its script, subtitles and thumbnail |
+
+## ⚠️ Notes
+
+- The Wan 2.2 clip step uses a free Hugging Face Space, so it can be slow or hit usage limits. The dashboard shows a clear error if this happens, and you can run the step again later.
+- Generated videos, audio and images are not stored in this repository, to keep it small.
+
+## 👤 Author
+
+**Muhammad Yasir**, Computer Science graduate (KUST)
+- GitHub: [muhammadyasir-Ai](https://github.com/muhammadyasir-Ai)
+- LinkedIn: [muhammad-yasir-17211a423](https://www.linkedin.com/in/muhammad-yasir-17211a423)
+- Portfolio: [muhammadyasir-ai.github.io/portfolio](https://muhammadyasir-ai.github.io/portfolio/)
