@@ -8,3 +8,8 @@ final/
 voiceovers/
 *.onnx
 *.onnx.json
+projects/job_status.json
+projects/job_log.txt
+projects/history.json
+*.tmp
+final/archive/
