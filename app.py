@@ -125,22 +125,22 @@ def step_blockers(key, project):
     reasons = []
     numbers = scene_numbers(project)
     if key != "script" and project is None:
-        reasons.append("Pehle script banayein.")
+        reasons.append("Generate the script first.")
     if key == "voice" and not MODEL_FILE.exists():
-        reasons.append("Piper model file (en_US-lessac-medium.onnx) project folder mein nahi hai.")
+        reasons.append("Piper model file (en_US-lessac-medium.onnx) is not in the project folder.")
     if key == "subs" and not NARRATION_FILE.exists():
-        reasons.append("Pehle voiceover banayein.")
+        reasons.append("Generate the voiceover first.")
     if key == "clips" and not all_exist([image_path(n) for n in numbers]):
-        reasons.append("Pehle sab scene images banayein.")
+        reasons.append("Generate all scene images first.")
     if key == "final":
         if not NARRATION_FILE.exists():
-            reasons.append("Voiceover abhi nahi bana.")
+            reasons.append("Voiceover is not generated yet.")
         if not SUBTITLE_FILE.exists():
-            reasons.append("Subtitles abhi nahi bane.")
+            reasons.append("Subtitles are not generated yet.")
         if not all_exist([clip_path(n) for n in numbers]):
-            reasons.append("Sab scene videos abhi nahi bani.")
+            reasons.append("Scene videos are not generated yet.")
         if not shutil.which("ffmpeg"):
-            reasons.append("FFmpeg PATH par nahi mila.")
+            reasons.append("FFmpeg was not found on PATH.")
     return reasons
 
 
@@ -197,7 +197,7 @@ def run_step(step, topic=None):
         if return_code == 0:
             status.update(label=f"{label} complete", state="complete", expanded=False)
             return True
-        status.update(label=f"{label} failed. Upar log dekhein.", state="error", expanded=True)
+        status.update(label=f"{label} failed. Check the log above.", state="error", expanded=True)
         return False
 
 
@@ -208,7 +208,7 @@ def render_header(project, timing):
         """
         <div class="hero">
             <h1>🎬 AI Video Studio</h1>
-            <p>Topic likhen, AI script, images, awaaz, subtitles aur video khud banaye.</p>
+            <p>Enter a topic and let AI create the script, images, voice, subtitles and video.</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -238,33 +238,33 @@ def render_sidebar():
 
         st.divider()
         st.markdown("### 🧹 Project files")
-        st.caption("Purane images, audio, subtitles aur videos delete karne ke liye. "
-                   "Scripts aur model delete nahi honge.")
-        confirm = st.checkbox("Haan, generated files delete karein")
+        st.caption("Delete old images, audio, subtitles and videos. "
+                   "Scripts and the model will not be deleted.")
+        confirm = st.checkbox("Yes, delete generated files")
         if st.button("Reset generated files", disabled=not confirm):
             reset_outputs()
-            st.toast("Generated files delete ho gaye.", icon="🧹")
+            st.toast("Generated files deleted.", icon="🧹")
             st.rerun()
 
         st.divider()
-        skip_done = st.toggle("Pipeline mein complete steps skip karein", value=True)
+        skip_done = st.toggle("Skip completed steps in pipeline", value=True)
         return skip_done
 
 
 def render_create(project):
     with st.container(border=True):
-        st.subheader("✍️ 1. Topic aur script")
+        st.subheader("✍️ 1. Topic and script")
         topic = st.text_input(
-            "Video ka topic",
+            "Video topic",
             placeholder="e.g. AI in 2026: What It Can Really Do",
             key="topic",
         )
         if project:
-            st.caption("Naya script banane se neeche ke images, audio, subtitles aur video "
-                       "dobara banane honge. Pehle sidebar se purane files reset kar sakte hain.")
-        if st.button("Script banayein", type="primary", disabled=not topic.strip()):
+            st.caption("Generating a new script means the images, audio, subtitles and video "
+                       "must be generated again. Reset old files from the sidebar first if needed.")
+        if st.button("Generate script", type="primary", disabled=not topic.strip()):
             if run_step(STEP_BY_KEY["script"], topic=topic.strip()):
-                st.toast("Script ready hai.", icon="✅")
+                st.toast("Script is ready.", icon="✅")
                 st.rerun()
         return topic.strip()
 
@@ -274,9 +274,9 @@ def render_pipeline(project, topic, skip_done):
     pending = [s["key"] for s in STEPS if not (skip_done and step_done(s["key"], project))]
 
     col_a, col_b = st.columns([1, 3])
-    if col_a.button("▶️ Sab steps chalayein", type="primary", disabled=not pending):
+    if col_a.button("▶️ Run all steps", type="primary", disabled=not pending):
         if "script" in pending and not topic:
-            st.warning("Pehle upar topic likhein.")
+            st.warning("Please enter a topic above first.")
         else:
             for key in pending:
                 blockers = step_blockers(key, load_project())
@@ -288,7 +288,7 @@ def render_pipeline(project, topic, skip_done):
             else:
                 st.toast("Pipeline complete! 🎉", icon="🎬")
             st.rerun()
-    col_b.caption(f"Baqi steps: {len(pending)}" if pending else "Sab steps complete hain.")
+    col_b.caption(f"Remaining steps: {len(pending)}" if pending else "All steps are complete.")
 
     for index, step in enumerate(STEPS, start=1):
         key = step["key"]
@@ -308,7 +308,7 @@ def render_pipeline(project, topic, skip_done):
                 if blockers:
                     st.caption("⏳ " + blockers[0])
             with action:
-                label = "Dobara chalayein" if done else "Chalayein"
+                label = "Run again" if done else "Run"
                 needs_topic = key == "script" and not topic
                 if st.button(label, key=f"run_{key}",
                              disabled=bool(blockers) or needs_topic,
@@ -326,11 +326,11 @@ def render_results(project):
 
     with tab_script:
         if not project:
-            st.info("Abhi script nahi bana.")
+            st.info("Script is not generated yet.")
         else:
             st.markdown(f"#### {project.get('title', '')}")
             st.write(project.get("description", ""))
-            st.markdown("##### Scenes (narration edit kar sakte hain)")
+            st.markdown("##### Scenes (you can edit the narration)")
             with st.form("narration_form"):
                 for scene in project.get("scenes", []):
                     number = scene["scene_number"]
@@ -341,17 +341,17 @@ def render_results(project):
                         st.write(scene.get("image_prompt", ""))
                         st.caption("Motion prompt")
                         st.write(scene.get("motion_prompt", ""))
-                if st.form_submit_button("💾 Narration save karein"):
+                if st.form_submit_button("💾 Save narration"):
                     for scene in project.get("scenes", []):
                         scene["narration"] = st.session_state[f"narr_{scene['scene_number']}"]
                     PROJECT_FILE.write_text(json.dumps(project, ensure_ascii=False, indent=4),
                                             encoding="utf-8")
-                    st.success("Save ho gaya. Voiceover se dobara shuru karein.")
+                    st.success("Saved. Start again from the voiceover step.")
 
     with tab_images:
         numbers = scene_numbers(project)
         if not numbers:
-            st.info("Pehle script banayein.")
+            st.info("Generate the script first.")
         else:
             columns = st.columns(3)
             for position, number in enumerate(numbers):
@@ -360,7 +360,7 @@ def render_results(project):
                     if path.exists():
                         st.image(str(path), caption=f"Scene {number}", use_container_width=True)
                     else:
-                        st.caption(f"Scene {number}: image abhi nahi bani")
+                        st.caption(f"Scene {number}: image not generated yet")
 
     with tab_voice:
         if NARRATION_FILE.exists():
@@ -368,7 +368,7 @@ def render_results(project):
             st.download_button("⬇️ Narration download", NARRATION_FILE.read_bytes(),
                                file_name="narration.wav", mime="audio/wav")
         else:
-            st.info("Voiceover abhi nahi bana.")
+            st.info("Voiceover is not generated yet.")
 
     with tab_subs:
         if SUBTITLE_FILE.exists():
@@ -376,7 +376,7 @@ def render_results(project):
             st.text_area("Subtitles (SRT)", value=text, height=320, disabled=True)
             st.download_button("⬇️ Subtitles download", text, file_name="subtitles.srt")
         else:
-            st.info("Subtitles abhi nahi bane.")
+            st.info("Subtitles are not generated yet.")
 
     with tab_final:
         if FINAL_FILE.exists():
@@ -385,7 +385,7 @@ def render_results(project):
             st.download_button("⬇️ Final video download", video_bytes,
                                file_name="final_video.mp4", mime="video/mp4", type="primary")
         else:
-            st.info("Final video abhi nahi bani.")
+            st.info("Final video is not generated yet.")
 
 
 def main():
